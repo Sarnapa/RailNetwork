@@ -1,17 +1,20 @@
 class LoadData:
 
-    def readLocalization(self, path):
+    def read_localization(self, path):
         file = open (path, 'r')
-        localizations = set()
+        localizations = {}
 
         for line in file:
             row = line.split()
-            localizations.add((float(row[0]),float(row[1])))
+            idx = int(row[0])
+            localizations[idx] = []
+            localizations[idx].append(int(row[1]))
+            localizations[idx].append(int(row[2]))
 
         file.close()
         return localizations
 
-    def readConfig(self, path):
+    def read_config(self, path):
         file = open (path, 'r')
         parameters = []
 

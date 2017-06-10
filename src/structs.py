@@ -5,8 +5,13 @@ import networkx as nx
 
 class RailNetworkTree:
 
-    def __init__(self):
-
+    def __init__(self, pos_dict: dict):
+        self.graph = nx.Graph()
+        for vertex, pos in pos_dict.items():
+            self.graph.add_node(vertex, x=pos[0], y=pos[1])
+            print(vertex)
+            print(self.graph.node[vertex]['x'])
+            print(self.graph.node[vertex]['y'])
     '''def __init__(self):
         self.cities_segments = []
         self.city_power_segments = []

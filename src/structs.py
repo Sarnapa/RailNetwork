@@ -9,8 +9,8 @@ class RailNetworkTree:
         self.graph = nx.Graph()
         for vertex, pos in pos_dict.items():
             self.graph.add_node(vertex, x=pos[0], y=pos[1])
-            print(vertex)
-            print(self.graph.node[vertex]['x'])
+            print(vertex, end=" ")
+            print(self.graph.node[vertex]['x'], end=" ")
             print(self.graph.node[vertex]['y'])
     '''def __init__(self):
         self.cities_segments = []

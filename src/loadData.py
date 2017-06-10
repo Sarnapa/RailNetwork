@@ -19,5 +19,5 @@ class LoadData:
             row = line.split()
             parameters.append(row[0])
 
-        file.close();
+        file.close()
         return parameters

@@ -1,10 +1,9 @@
 from src.utils import distanceBetweenPoints
-from random import sample
+from random import sample, random
 import networkx as nx
 
 
 class RailNetworkTree:
-
     def __init__(self, pos_dict: dict):
         self.graph = nx.Graph()
         for vertex, pos in pos_dict.items():
@@ -18,6 +17,27 @@ class RailNetworkTree:
 
     def get_node_y(self, vertex):
         return self.graph.node[vertex]['y']
+
+    def count_goal_fun(self, cost_traction, cost_add_electic_station):
+        print("count goal func")
+
+    def mutate(self):
+        print("mutate")
+
+    def addCycleToGraph(self):
+        do=True
+        while(do):
+            nodes = random.sample(self.graph.nodes, 2)
+            if not (self.graph.has_edge(nodes[0], nodes[1]) or self.graph.has_edge(nodes[1], nodes[0])):
+                self.graph.add_edge(nodes[0],nodes[1])
+                if(nx.is_directed_acyclic_graph(self.graph)):
+                    self.graph.remove_edge(nodes[0],nodes[1])
+                else:
+                    return list(nx.simple_cycles(self.graph))
+
+
+    def findCycle(self):
+        return
 
     '''
     def count_score(self, rail_cost, power_lines_cost):
@@ -95,8 +115,8 @@ class RailNetworkTree:
         return cities_edges_list
     '''
 
-class LineSegment:
 
+class LineSegment:
     def __init__(self, p1, p2, conn=False):
         self.points = set()
         self.points.add(p1)

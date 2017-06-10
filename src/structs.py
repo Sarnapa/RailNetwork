@@ -27,7 +27,7 @@ class RailNetworkTree:
     def addCycleToGraph(self):
         do=True
         while(do):
-            nodes = random.sample(self.graph.nodes, 2)
+            nodes = random.sample(self.graph.nodes(), 2)
             if not (self.graph.has_edge(nodes[0], nodes[1]) or self.graph.has_edge(nodes[1], nodes[0])):
                 self.graph.add_edge(nodes[0],nodes[1])
                 if(nx.is_directed_acyclic_graph(self.graph)):

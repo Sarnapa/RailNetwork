@@ -10,13 +10,16 @@ class RailNetworkTree:
         for vertex, pos in pos_dict.items():
             self.graph.add_node(vertex, x=pos[0], y=pos[1])
             print(vertex, end=" ")
-            print(self.graph.node[vertex]['x'], end=" ")
-            print(self.graph.node[vertex]['y'])
-    '''def __init__(self):
-        self.cities_segments = []
-        self.city_power_segments = []
-        self.score = 0
+            print(self.get_node_x(vertex), end=" ")
+            print(self.get_node_y(vertex))
 
+    def get_node_x(self, vertex):
+        return self.graph.node[vertex]['x']
+
+    def get_node_y(self, vertex):
+        return self.graph.node[vertex]['y']
+
+    '''
     def count_score(self, rail_cost, power_lines_cost):
         self.score = 0
         #so far

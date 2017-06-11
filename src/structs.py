@@ -25,15 +25,17 @@ class RailNetworkTree:
         print("mutate")
 
     def addCycleToGraph(self):
-        do=True
-        while(do):
+        do = True
+        while (do):
             nodes = random.sample(self.graph.nodes(), 2)
             if not (self.graph.has_edge(nodes[0], nodes[1]) or self.graph.has_edge(nodes[1], nodes[0])):
-                self.graph.add_edge(nodes[0],nodes[1])
-                if(nx.is_directed_acyclic_graph(self.graph)):
-                    self.graph.remove_edge(nodes[0],nodes[1])
+                self.graph.add_edge(nodes[0], nodes[1])
+                if (nx.is_directed_acyclic_graph(self.graph)):
+                    self.graph.remove_edge(nodes[0], nodes[1])
                 else:
-                    return list(nx.simple_cycles(self.graph))
+                    edges = list(nx.find_cycle(self.graph))
+                    edges.remove((nodes[0],nodes[1]))
+                    return edges
 
 
     def findCycle(self):

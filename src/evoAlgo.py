@@ -2,6 +2,7 @@ from src.structs import RailNetworkTree
 from random import random
 from bisect import bisect_left
 
+
 class EvoAlgo:
 
     def __init__(self, cities_pos, ps_pos, rails_cost, ps_cost, population_quantity, selection_quantity, iterations_count, attempts_count):
@@ -76,5 +77,18 @@ class EvoAlgo:
 
     def do_crossover(self, selected_individuals):
         children_list = []
-        return children_list
+        length = len(selected_individuals)
 
+        for i in range(length - 1):
+            for j in range(i + 1, length):
+                child = RailNetworkTree(self.pos_dict)
+                child.crossover(selected_individuals[i].get_cities_edges(), selected_individuals[j].get_cities_edges())
+                child.connect_ps_to_nearest_cities()
+                children_list.append(child)
+
+        print("After crossing-over: ")
+        for child in children_list:
+            child.count_score(self.rails_cost, self.ps_cost)
+            child.print_tree()
+            print("Child score: ", child.score)
+        return children_list

@@ -26,6 +26,13 @@ class RailNetworkTree:
     def get_node_pos(self, vertex):
         return self.get_node_x(vertex), self.get_node_y(vertex)
 
+    def get_cities_edges(self):
+        cities_edges = []
+        for v1, v2 in self.graph.edges():
+            if v1 >= 0 and v2 >= 0:
+                cities_edges.append((v1, v2, self.graph[v1][v2]))
+        return cities_edges
+
     def add_edge(self, v1, v2):
         self.graph.add_edge(v1, v2, weight=distanceBetweenPoints(self.get_node_pos(v1) + (0,), self.get_node_pos(v2) + (0,)))
 
@@ -44,7 +51,7 @@ class RailNetworkTree:
                 self.score += rails_cost * self.graph[v1][v2]['weight']
         for city in cities_to_find_ps_conn:
             self.score += ps_cost * self.distance_to_nearest_ps(city)
-        print("SCORE: ", self.score)
+        #print("SCORE: ", self.score)
         return self.score
 
     def distance_to_nearest_ps(self, node):
@@ -53,7 +60,7 @@ class RailNetworkTree:
             tmp_distance = nx.shortest_path_length(self.graph, node, ps_node, 'weight')
             if tmp_distance < distance:
                 distance = tmp_distance
-        print("WYNIK: ", distance, " ", node)
+        #print("WYNIK: ", distance, " ", node)
         return distance
 
     def generate_init_tree(self):
@@ -101,9 +108,30 @@ class RailNetworkTree:
                     edges.remove((nodes[0], nodes[1]))
                     return edges
 
-
     def findCycle(self):
         return
+
+    def crossover(self, edges1, edges2):
+        g = nx.Graph()
+        g.add_edges_from(edges1)
+        g.add_edges_from(edges2)
+        mst = nx.minimum_spanning_edges(g, 'weight')
+        edge_list = list(mst)
+        self.graph.add_edges_from(edge_list)
+
+    def connect_ps_to_nearest_cities(self):
+        current_city = None
+        cities = self.cities_nodes.copy()
+        for ps in self.ps_nodes:
+            distance = sys.float_info.max
+            for city in list(cities):
+                tmp_distance = distanceBetweenPoints(self.get_node_pos(city) + (0,), self.get_node_pos(ps) + (0,))
+                if tmp_distance < distance:
+                    distance = tmp_distance
+                    current_city = city
+                    cities.remove(city)
+
+            self.add_edge(current_city, ps)
 
     # na razie dla testow
     def print_tree(self):

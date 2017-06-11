@@ -91,7 +91,9 @@ class RailNetworkTree:
                 self.add_edge(node, second_node)
 
     def mutate(self):
-        edges_to_remove = self.addCycleToGraph()
+        added_edge = self.addCycleToGraph()
+        edges_to_remove = list(nx.find_cycle(self.graph))
+        edges_to_remove.remove(added_edge)
         edge_to_remove = random.sample(edges_to_remove,1)
         self.graph.remove_edge(edge_to_remove)
 
@@ -104,9 +106,7 @@ class RailNetworkTree:
                 if nx.is_directed_acyclic_graph(self.graph):
                     self.graph.remove_edge(nodes[0], nodes[1])
                 else:
-                    edges = list(nx.find_cycle(self.graph))
-                    edges.remove((nodes[0], nodes[1]))
-                    return edges
+                    return (nodes[0], nodes[1])
 
     def findCycle(self):
         return

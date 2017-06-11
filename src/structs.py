@@ -8,15 +8,21 @@ class RailNetworkTree:
         self.graph = nx.Graph()
         for vertex, pos in pos_dict.items():
             self.graph.add_node(vertex, x=pos[0], y=pos[1])
-            print(vertex, end=" ")
-            print(self.get_node_x(vertex), end=" ")
-            print(self.get_node_y(vertex))
+            #print(vertex, end=" ")
+            #print(self.get_node_x(vertex), end=" ")
+            #print(self.get_node_y(vertex))
 
     def get_node_x(self, vertex):
         return self.graph.node[vertex]['x']
 
     def get_node_y(self, vertex):
         return self.graph.node[vertex]['y']
+
+    def get_node_pos(self, vertex):
+        pos = []
+        pos.append(self.get_node_x(vertex))
+        pos.append(self.get_node_y(vertex))
+        return pos #set(self.get_node_x(vertex), self.get_node_y(vertex)]
 
     def count_goal_fun(self, cost_traction, cost_add_electic_station):
         print("count goal func")
@@ -39,82 +45,36 @@ class RailNetworkTree:
     def findCycle(self):
         return
 
-    '''
-    def count_score(self, rail_cost, power_lines_cost):
-        self.score = 0
-        #so far
-        for seg in self.cities_segments:
-            self.score += seg.length() * rail_cost
+    def add_edge(self, v1, v2):
+        self.graph.add_edge(v1, v2) #weight=distanceBetweenPoints(self.get_node_pos(v1) + (0,), self.get_node_pos(v2) + (0,)))
 
-        for seg in self.city_power_segments:
-            self.score += seg.length() * power_lines_cost
+    def generate_init_tree(self):
+        used_nodes = set()
+        not_used_nodes = self.graph.nodes()
+        while len(not_used_nodes) != 0:
+            node = sample(not_used_nodes, 1)
+            node = node.pop(0)
+            not_used_nodes.remove(node)
+            if len(used_nodes) == 0:
+                used_nodes.add(node)
+            else:
+                second_node = -1
+                # rand only cities
+                while second_node < 0:
+                    second_node = sample(used_nodes, 1)
+                    second_node = second_node.pop(0)
 
-        self.score = 1.0 / self.score
-        return self.score
+                self.add_edge(node, second_node)
+                used_nodes.add(node)
 
-    def add_new_segment(self, line_segment: LineSegment):
-        if line_segment.is_conn_to_power:
-            self.city_power_segments.append(line_segment)
-        else:
-            self.cities_segments.append(line_segment)
-
-    # to random one segment to get cycle
-    def random_new_segment(self):
-        insert_point = None
-        out_points = None
-        new_segment = None
-        neighbours_list = self.to_neighbours_list()
-        all_points = set(neighbours_list.keys())
-        unchosen_points = all_points.copy()
-        while unchosen_points:
-            insert_point = sample(unchosen_points, 1).pop()
-            unchosen_points.remove(insert_point)
-            neighbour_points = neighbours_list[insert_point]
-            out_points = (all_points - neighbour_points)
-            out_points.remove(insert_point)
-            if out_points:
-                break
-
-        # if there are some no "neighbour point", we create new segment.
-        if out_points:
-            new_neighbour = sample(out_points, 1).pop()
-            new_segment = LineSegment(insert_point, new_neighbour)
-            self.add_new_segment(new_segment)
-        else:
-            pass
-
-        return new_segment
-
-    # to create neighbours list that contains all neighbours for one index
-    def to_neighbours_list(self):
-        neighbours_list = {}
-        for seg in self.cities_segments:
-            points = seg.points.copy()
-            point1 = points.pop()
-            point2 = points.pop()
-            if point1 not in neighbours_list:
-                neighbours_list[point1] = set()
-            if point2 not in neighbours_list:
-                neighbours_list[point2] = set()
-            neighbours_list[point1].add(point2)
-            neighbours_list[point2].add(point1)
-        return neighbours_list
-
-    def find_cycle(self):
-        G = nx.Graph
-        nx.find_cycle()
-
-        return cycle
-
-    def get_cities_edges_list(self):
-        cities_edges_list = []
-        for seg in self.cities_segments:
-            points = seg.points.copy()
-            cities_edges_list.append(points)
-
-        return cities_edges_list
-    '''
-
+    # na razie dla testow
+    def print_tree(self):
+        for node in self.graph.nodes():
+            print(node, end=" ")
+            print(self.get_node_x(node), end=" ")
+            print(self.get_node_y(node))
+        print("Edges:")
+        print(self.graph.edges())
 
 class LineSegment:
     def __init__(self, p1, p2, conn=False):

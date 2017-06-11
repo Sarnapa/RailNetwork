@@ -1,4 +1,4 @@
-from src.structs import RailNetworkTree
+from src.evoAlgo import EvoAlgo
 from src.loadData import LoadData
 
 '''points = set()
@@ -17,13 +17,8 @@ ps_file_name = "Test01_power_stations"
 cities_pos = LoadData().read_localization(topology_catalog_path + cities_file_name)
 ps_pos = LoadData().read_localization(topology_catalog_path + ps_file_name)
 
-pos_dict = {}
-for vertex, pos in cities_pos.items():
-    pos_dict[vertex] = pos
-
-for vertex, pos in ps_pos.items():
-    pos_dict[vertex] = pos
-
-RailNetworkTree(pos_dict)
+#na razie tak
+evo_algo = EvoAlgo(cities_pos, ps_pos, 0, 0, 5, 0, 0)
+evo_algo.generate_init_population()
 
 

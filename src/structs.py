@@ -56,7 +56,7 @@ class RailNetworkTree:
         if v1 < 0 and v1 in self.connected_ps_nodes:
             self.connected_ps_nodes.remove(v1)
         elif v2 < 0 and v2 in self.connected_ps_nodes:
-            self.connected_ps_nodes.add(v2)
+            self.connected_ps_nodes.remove(v2)
 
     # na razie tak - trzeba pomyslec z ta funkcja
     def count_score(self):
@@ -160,16 +160,23 @@ class RailNetworkTree:
             edges[ps_node] = sorted_edges
 
         ps_nodes = self.ps_nodes.copy()
+        connected_cities = []
         for i in range(len(ps_nodes)):
             node = sample(ps_nodes, 1).pop(0)
             edge = sample(edges[node], 1)
             node2, weight = edge[0]
             current_score = self.score
             self.add_edge(node2, node)
-            if self.count_score() > current_score:
+            print("nowy edge: ", node2, node)
+            if node2 in connected_cities:
+                self.remove_edge(node2, node)
+            elif self.count_score() > current_score:
                 self.remove_edge(node2, node)
             else:
+                connected_cities.append(node2)
                 ps_nodes.remove(node)
+
+
 
     '''
     def connect_ps_to_nearest_cities(self):

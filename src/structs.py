@@ -22,7 +22,9 @@ class RailNetworkTree:
         print("count goal func")
 
     def mutate(self):
-        print("mutate")
+        edges_to_remove = self.addCycleToGraph()
+        edge_to_remove = random.sample(edges_to_remove,1)
+        self.graph.remove_edge(edge_to_remove)
 
     def addCycleToGraph(self):
         do = True

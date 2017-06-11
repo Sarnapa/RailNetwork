@@ -18,7 +18,7 @@ ps_file_name = "Test01_power_stations"
 rails_cost, ps_cost, opulation_quantity, selection_quantity, iterations_count, attempts_count = LoadData().read_config("../tests/config/Config_01")
 cities_pos = LoadData().read_localization(topology_catalog_path + cities_file_name)
 ps_pos = LoadData().read_localization(topology_catalog_path + ps_file_name)
-print (rails_cost, ps_cost, opulation_quantity, selection_quantity, iterations_count, attempts_count)
+print (rails_cost, ps_cost, float(opulation_quantity), float(selection_quantity), int(iterations_count), int(attempts_count))
 #na razie tak
 #evo_algo = EvoAlgo(cities_pos, ps_pos, 10, 5, 2, 2, 0, 0)
 evo_algo = EvoAlgo(cities_pos, ps_pos,rails_cost, ps_cost, opulation_quantity, selection_quantity, iterations_count, attempts_count)

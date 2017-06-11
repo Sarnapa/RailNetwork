@@ -52,7 +52,7 @@ class EvoAlgo:
         scores_list = []
         last_score = 0
         population = self.population.copy()
-        for individual in population:
+        for individual in self.population:
             last_score += 1/individual.count_score(self.rails_cost, self.ps_cost)
             #print("last_score: ", last_score)
             scores_list.append(last_score)
@@ -63,8 +63,8 @@ class EvoAlgo:
             else:
                 rand_pos = bisect_left(scores_list, rand)
             selected_individuals.append(population[rand_pos])
-            self.population[rand_pos].print_tree()
-            print("SCORE: ", self.population[rand_pos].score, " ", rand_pos)
+            population[rand_pos].print_tree()
+            print("SCORE: ", population[rand_pos].score, " ", rand_pos)
             tmp_pos = rand_pos + 1
             for j in range(tmp_pos, len(population)):
                 scores_list[j] -= 1/population[rand_pos].score
@@ -73,3 +73,8 @@ class EvoAlgo:
             population.remove(population[rand_pos])
 
         return selected_individuals
+
+    def do_crossover(self, selected_individuals):
+        children_list = []
+        return children_list
+

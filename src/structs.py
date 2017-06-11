@@ -1,6 +1,7 @@
 from src.utils import distanceBetweenPoints
 from random import sample, random
 import networkx as nx
+import sys
 
 
 class RailNetworkTree:
@@ -30,18 +31,34 @@ class RailNetworkTree:
 
     # na razie tak - trzeba pomyslec z ta funkcja
     def count_score(self, rails_cost, ps_cost):
+        cities_to_find_ps_conn = self.cities_nodes.copy()
         self.score = 0
         for v1, v2 in self.graph.edges():
             if v1 < 0 or v2 < 0:
+                if v1 >= 0:
+                    cities_to_find_ps_conn.remove(v1)
+                elif v2 >= 0:
+                    cities_to_find_ps_conn.remove(v2)
                 self.score += ps_cost * self.graph[v1][v2]['weight']
             else:
                 self.score += rails_cost * self.graph[v1][v2]['weight']
+        for city in cities_to_find_ps_conn:
+            self.score += ps_cost * self.distance_to_nearest_ps(city)
         print("SCORE: ", self.score)
         return self.score
 
+    def distance_to_nearest_ps(self, node):
+        distance = sys.float_info.max
+        for ps_node in self.ps_nodes:
+            tmp_distance = nx.shortest_path_length(self.graph, node, ps_node, 'weight')
+            if tmp_distance < distance:
+                distance = tmp_distance
+        print("WYNIK: ", distance, " ", node)
+        return distance
+
     def generate_init_tree(self):
         used_nodes = set()
-        not_used_nodes = self.cities_nodes
+        not_used_nodes = self.cities_nodes.copy()
         while len(not_used_nodes) != 0:
             node = sample(not_used_nodes, 1)
             node = node.pop(0)
@@ -55,7 +72,7 @@ class RailNetworkTree:
                 used_nodes.add(node)
 
         if len(used_nodes) != 0:
-            not_used_nodes = self.ps_nodes
+            not_used_nodes = self.ps_nodes.copy()
             while len(not_used_nodes) != 0:
                 node = sample(not_used_nodes, 1)
                 node = node.pop(0)

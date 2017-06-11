@@ -18,7 +18,8 @@ cities_pos = LoadData().read_localization(topology_catalog_path + cities_file_na
 ps_pos = LoadData().read_localization(topology_catalog_path + ps_file_name)
 
 #na razie tak
-evo_algo = EvoAlgo(cities_pos, ps_pos, 0, 0, 5, 0, 0)
+evo_algo = EvoAlgo(cities_pos, ps_pos, 10, 5, 5, 2, 0, 0)
 evo_algo.generate_init_population()
+evo_algo.do_selection()
 
 

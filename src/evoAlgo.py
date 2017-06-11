@@ -43,7 +43,7 @@ class EvoAlgo:
 
     def generate_init_population(self):
         for i in range(self.population_quantity):
-            individual = RailNetworkTree(self.pos_dict)
+            individual = RailNetworkTree(self.pos_dict, self.rails_cost, self.ps_cost)
             individual.generate_init_tree()
             #individual.print_tree()
             self.population.append(individual)
@@ -54,7 +54,7 @@ class EvoAlgo:
         last_score = 0
         population = self.population.copy()
         for individual in self.population:
-            last_score += 1/individual.count_score(self.rails_cost, self.ps_cost)
+            last_score += 1/individual.count_score()
             #print("last_score: ", last_score)
             scores_list.append(last_score)
         for i in range(self.selection_quantity):
@@ -81,14 +81,27 @@ class EvoAlgo:
 
         for i in range(length - 1):
             for j in range(i + 1, length):
-                child = RailNetworkTree(self.pos_dict)
+                child = RailNetworkTree(self.pos_dict, self.rails_cost, self.ps_cost)
                 child.crossover(selected_individuals[i].get_cities_edges(), selected_individuals[j].get_cities_edges())
-                child.connect_ps_to_nearest_cities()
+                child.connect_ps(selected_individuals[i].get_ps_edges(), selected_individuals[j].get_ps_edges())
+                #child.connect_ps_to_nearest_cities()
                 children_list.append(child)
 
         print("After crossing-over: ")
         for child in children_list:
-            child.count_score(self.rails_cost, self.ps_cost)
+            child.count_score()
             child.print_tree()
             print("Child score: ", child.score)
         return children_list
+
+    def do_mutation(self, children_list):
+        return
+
+    def do_succession(self, mutated_list):
+        population = self.population.copy
+        for mutated in mutated_list:
+            population.append(mutated)
+        sorted_population = sorted(population, key=lambda individual: individual.score, reverse=True)
+        self.population = sorted_population[:self.population_quantity]
+        for individual in self.population:
+            individual.print_tree()

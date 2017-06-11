@@ -2,13 +2,17 @@ from src.utils import distanceBetweenPoints
 from random import sample, random
 import networkx as nx
 import sys
+import operator
 
 
 class RailNetworkTree:
-    def __init__(self, pos_dict: dict):
-        self.score = 0
+    def __init__(self, pos_dict: dict, rails_cost, ps_cost):
+        self.score = sys.float_info.max
+        self.rails_cost = rails_cost
+        self.ps_cost = ps_cost
         self.cities_nodes = set()
         self.ps_nodes = set()
+        self.connected_ps_nodes = set()
         self.graph = nx.Graph()
         for vertex, pos in pos_dict.items():
             self.graph.add_node(vertex, x=pos[0], y=pos[1])
@@ -33,11 +37,29 @@ class RailNetworkTree:
                 cities_edges.append((v1, v2, self.graph[v1][v2]))
         return cities_edges
 
+    def get_ps_edges(self):
+        ps_edges = []
+        for v1, v2 in self.graph.edges():
+            if v1 < 0 or v2 < 0:
+                ps_edges.append((v1, v2, self.graph[v1][v2]))
+        return ps_edges
+
     def add_edge(self, v1, v2):
         self.graph.add_edge(v1, v2, weight=distanceBetweenPoints(self.get_node_pos(v1) + (0,), self.get_node_pos(v2) + (0,)))
+        if v1 < 0 and v1 not in self.connected_ps_nodes:
+            self.connected_ps_nodes.add(v1)
+        elif v2 < 0 and v2 not in self.connected_ps_nodes:
+            self.connected_ps_nodes.add(v2)
+
+    def remove_edge(self, v1, v2):
+        self.graph.remove_edge(v1, v2)
+        if v1 < 0 and v1 in self.connected_ps_nodes:
+            self.connected_ps_nodes.remove(v1)
+        elif v2 < 0 and v2 in self.connected_ps_nodes:
+            self.connected_ps_nodes.add(v2)
 
     # na razie tak - trzeba pomyslec z ta funkcja
-    def count_score(self, rails_cost, ps_cost):
+    def count_score(self):
         cities_to_find_ps_conn = self.cities_nodes.copy()
         self.score = 0
         for v1, v2 in self.graph.edges():
@@ -46,17 +68,17 @@ class RailNetworkTree:
                     cities_to_find_ps_conn.remove(v1)
                 elif v2 >= 0:
                     cities_to_find_ps_conn.remove(v2)
-                self.score += ps_cost * self.graph[v1][v2]['weight']
+                self.score += self.ps_cost * self.graph[v1][v2]['weight']
             else:
-                self.score += rails_cost * self.graph[v1][v2]['weight']
+                self.score += self.rails_cost * self.graph[v1][v2]['weight']
         for city in cities_to_find_ps_conn:
-            self.score += ps_cost * self.distance_to_nearest_ps(city)
+            self.score += self.ps_cost * self.distance_to_nearest_ps(city)
         #print("SCORE: ", self.score)
         return self.score
 
     def distance_to_nearest_ps(self, node):
         distance = sys.float_info.max
-        for ps_node in self.ps_nodes:
+        for ps_node in self.connected_ps_nodes:
             tmp_distance = nx.shortest_path_length(self.graph, node, ps_node, 'weight')
             if tmp_distance < distance:
                 distance = tmp_distance
@@ -119,6 +141,37 @@ class RailNetworkTree:
         edge_list = list(mst)
         self.graph.add_edges_from(edge_list)
 
+    def connect_ps(self, edges1, edges2):
+        edges = {}
+        for ps_node in self.ps_nodes:
+            edges[ps_node] = set()
+        for edge in edges1:
+            if edge[0] < 0:
+                edges[edge[0]].add((edge[1], edge[2]['weight']))
+            elif edge[1] < 0:
+                edges[edge[1]].add((edge[0], edge[2]['weight']))
+        for edge in edges2:
+            if edge[0] < 0:
+                edges[edge[0]].add((edge[1], edge[2]['weight']))
+            elif edge[1] < 0:
+                edges[edge[1]].add((edge[0], edge[2]['weight']))
+        for ps_node in self.ps_nodes:
+            sorted_edges = sorted(edges[ps_node], key=operator.itemgetter(1))
+            edges[ps_node] = sorted_edges
+
+        ps_nodes = self.ps_nodes.copy()
+        for i in range(len(ps_nodes)):
+            node = sample(ps_nodes, 1).pop(0)
+            edge = sample(edges[node], 1)
+            node2, weight = edge[0]
+            current_score = self.score
+            self.add_edge(node2, node)
+            if self.count_score() > current_score:
+                self.remove_edge(node2, node)
+            else:
+                ps_nodes.remove(node)
+
+    '''
     def connect_ps_to_nearest_cities(self):
         current_city = None
         cities = self.cities_nodes.copy()
@@ -131,7 +184,7 @@ class RailNetworkTree:
                     current_city = city
                     cities.remove(city)
 
-            self.add_edge(current_city, ps)
+            self.add_edge(current_city, ps) '''
 
     # na razie dla testow
     def print_tree(self):

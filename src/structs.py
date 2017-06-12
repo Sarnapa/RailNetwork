@@ -124,7 +124,7 @@ class RailNetworkTree:
         added_edge = self.addCycleToGraph()
         if added_edge[0] < 0:
             neighbours = self.graph.neighbors(added_edge[0])
-            if len(neighbours) > 1:
+            if len(neighbours) > 1 and added_edge[1]>0:
                 neighbours.remove(added_edge[1])
                 self.remove_edge(added_edge[0], neighbours[0])
         elif added_edge[1] < 0:
@@ -148,7 +148,7 @@ class RailNetworkTree:
         while do:
             nodes = sample(self.graph.nodes(), 2)
             v1, v2 = nodes
-            if not (self.graph.has_edge(v1, v2) or self.graph.has_edge(v1, v2)):
+            if not (self.graph.has_edge(v1, v2)):
                 if not(v1 < 0 and self.is_connected_to_ps(v2)) and not(v2 < 0 and self.is_connected_to_ps(v1)):
                     self.add_edge(v1, v2)
                     return v1, v2

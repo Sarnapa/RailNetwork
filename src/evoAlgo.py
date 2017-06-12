@@ -1,3 +1,4 @@
+from src.representation import Representation
 from src.structs import RailNetworkTree
 from random import random
 from bisect import bisect_left
@@ -117,6 +118,9 @@ class EvoAlgo:
         sorted_population = sorted(population, key=lambda individual: individual.score)
         self.population = sorted_population[:self.population_quantity]
         print("After succession")
+        ind = RailNetworkTree(self.pos_dict,2,3)
         for individual in self.population:
             individual.print_tree()
             print("Score: ", individual.score)
+            ind = individual
+        Representation().show_graph(ind.graph)

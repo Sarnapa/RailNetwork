@@ -26,4 +26,5 @@ evo_algo.generate_init_population()
 selected = evo_algo.do_selection()
 children_list = evo_algo.do_crossover(selected)
 mutated_list = evo_algo.do_mutation(children_list)
+evo_algo.do_succession(mutated_list)
 

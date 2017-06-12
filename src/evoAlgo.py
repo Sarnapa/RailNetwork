@@ -111,7 +111,12 @@ class EvoAlgo:
         population = self.population.copy()
         for mutated in mutated_list:
             population.append(mutated)
-        sorted_population = sorted(population, key=lambda individual: individual.score, reverse=True)
+        # na wszelki wypadek na wyliczamy wartosci dla wszystkich
+        for individual in population:
+            individual.count_score()
+        sorted_population = sorted(population, key=lambda individual: individual.score)
         self.population = sorted_population[:self.population_quantity]
+        print("After succession")
         for individual in self.population:
             individual.print_tree()
+            print("Score: ", individual.score)

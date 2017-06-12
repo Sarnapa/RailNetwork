@@ -114,24 +114,31 @@ class RailNetworkTree:
 
     def mutate(self):
         added_edge = self.addCycleToGraph()
-        edges_to_remove = list(nx.find_cycle(self.graph))
-        edges_to_remove.remove(added_edge)
-        edge_to_remove = random.sample(edges_to_remove,1)
-        self.graph.remove_edge(edge_to_remove)
+        if(added_edge[0]<-1):
+            neighbours = self.graph.neighbors(added_edge[0])
+            neighbours.remove(added_edge[1])
+            self.graph.remove_edge(added_edge[0],neighbours[0])
+        elif(added_edge[1]<-1):
+            neighbours = self.graph.neighbors(added_edge[1])
+            neighbours.remove(added_edge[0])
+            self.graph.remove_edge(added_edge[1], neighbours[0])
+        else:
+            edges_to_remove = list(nx.find_cycle(self.graph))
+            edges_to_remove.remove(added_edge)
+            edge_to_remove = random.sample(edges_to_remove,1)
+            self.graph.remove_edge(edge_to_remove)
+
 
     def addCycleToGraph(self):
         do = True
         while do:
             nodes = random.sample(self.graph.nodes(), 2)
-            if not (self.graph.has_edge(nodes[0], nodes[1]) or self.graph.has_edge(nodes[1], nodes[0])):
+            if not (self.graph.has_edge(nodes[0], nodes[1])):
                 self.graph.add_edge(nodes[0], nodes[1])
-                if nx.is_directed_acyclic_graph(self.graph):
-                    self.graph.remove_edge(nodes[0], nodes[1])
-                else:
-                    return (nodes[0], nodes[1])
+                return (nodes[0], nodes[1])
 
-    def findCycle(self):
-        return
+
+
 
     def crossover(self, edges1, edges2):
         g = nx.Graph()

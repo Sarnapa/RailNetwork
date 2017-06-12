@@ -122,30 +122,43 @@ class RailNetworkTree:
 
     def mutate(self):
         added_edge = self.addCycleToGraph()
-        print("added_edge: ", added_edge)
         if added_edge[0] < 0:
             neighbours = self.graph.neighbors(added_edge[0])
-            neighbours.remove(added_edge[1])
-            self.remove_edge(added_edge[0], neighbours[0])
+            if len(neighbours) > 1:
+                neighbours.remove(added_edge[1])
+                self.remove_edge(added_edge[0], neighbours[0])
         elif added_edge[1] < 0:
             neighbours = self.graph.neighbors(added_edge[1])
-            neighbours.remove(added_edge[0])
-            self.remove_edge(added_edge[1], neighbours[0])
+            if len(neighbours) > 1:
+                neighbours.remove(added_edge[0])
+                self.remove_edge(added_edge[1], neighbours[0])
         else:
             edges_to_remove = list(nx.find_cycle(self.graph))
-            edges_to_remove.remove(added_edge)
+            added_edge_v1, added_edge_v2 = added_edge
+            if (added_edge_v1, added_edge_v2) in edges_to_remove:
+                edges_to_remove.remove(added_edge)
+            else:
+                edges_to_remove.remove((added_edge_v2, added_edge_v1))
             edge_to_remove = sample(edges_to_remove, 1)
-            v1, v2 = edge_to_remove
-            print("lolo: ", edge_to_remove, " ", v1, " ", v2)
+            v1, v2 = edge_to_remove.pop(0)
             self.remove_edge(v1, v2)
 
     def addCycleToGraph(self):
         do = True
         while do:
             nodes = sample(self.graph.nodes(), 2)
-            if not (self.graph.has_edge(nodes[0], nodes[1]) or self.graph.has_edge(nodes[1], nodes[0])):
-                self.add_edge(nodes[0], nodes[1])
-                return nodes[0], nodes[1]
+            v1, v2 = nodes
+            if not (self.graph.has_edge(v1, v2) or self.graph.has_edge(v1, v2)):
+                if not(v1 < 0 and self.is_connected_to_ps(v2)) and not(v2 < 0 and self.is_connected_to_ps(v1)):
+                    self.add_edge(v1, v2)
+                    return v1, v2
+
+    def is_connected_to_ps(self, node):
+        neighbours = self.graph.neighbors(node)
+        for v in neighbours:
+            if v < 0:
+                return True
+        return False
 
     def crossover(self, edges1, edges2):
         g = nx.Graph()

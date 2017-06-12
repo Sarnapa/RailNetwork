@@ -28,6 +28,7 @@ class EvoAlgo:
 
         for i in range(self.iterations_count):
             result = self.start_one_iter()
+            best_results.append(result)
             # jakies kwestie zwiazane z generowanie raportów
 
         return best_results
@@ -36,7 +37,11 @@ class EvoAlgo:
         best_cost = 0.0
         avg_cost = 0.0
 
-        #algorytm
+        selected_individuals = self.do_selection()
+        children_list = self.do_crossover(selected_individuals)
+        mutated_list = self.do_mutation(children_list)
+        self.do_succession(mutated_list)
+        best_cost = self.population[0].score
 
         # pewnie więcej bedzie tutaj parametrow na outpucie
         return [best_cost, avg_cost]
@@ -45,7 +50,6 @@ class EvoAlgo:
         for i in range(self.population_quantity):
             individual = RailNetworkTree(self.pos_dict, self.rails_cost, self.ps_cost)
             individual.generate_init_tree()
-            #individual.print_tree()
             self.population.append(individual)
 
     def do_selection(self):
@@ -55,7 +59,6 @@ class EvoAlgo:
         population = self.population.copy()
         for individual in self.population:
             last_score += 1/individual.count_score()
-            #print("last_score: ", last_score)
             scores_list.append(last_score)
         for i in range(self.selection_quantity):
             rand = random() * scores_list[-1]
@@ -65,11 +68,10 @@ class EvoAlgo:
                 rand_pos = bisect_left(scores_list, rand)
             selected_individuals.append(population[rand_pos])
             population[rand_pos].print_tree()
-            print("SCORE: ", population[rand_pos].score, " ", rand_pos)
+            print("SCORE: ", population[rand_pos].score)
             tmp_pos = rand_pos + 1
             for j in range(tmp_pos, len(population)):
                 scores_list[j] -= 1/population[rand_pos].score
-                #print("new last_score: ", scores_list[j], " ", j)
             scores_list.remove(scores_list[rand_pos])
             population.remove(population[rand_pos])
 
@@ -84,7 +86,6 @@ class EvoAlgo:
                 child = RailNetworkTree(self.pos_dict, self.rails_cost, self.ps_cost)
                 child.crossover(selected_individuals[i].get_cities_edges(), selected_individuals[j].get_cities_edges())
                 child.connect_ps(selected_individuals[i].get_ps_edges(), selected_individuals[j].get_ps_edges())
-                #child.connect_ps_to_nearest_cities()
                 children_list.append(child)
 
         print("After crossing-over: ")
@@ -95,10 +96,19 @@ class EvoAlgo:
         return children_list
 
     def do_mutation(self, children_list):
-        return
+
+        for child in children_list:
+            child.mutate()
+
+        print("After mutation: ")
+        for child in children_list:
+            child.print_tree()
+            child.count_score()
+            print("Child score: ", child.score)
+        return children_list
 
     def do_succession(self, mutated_list):
-        population = self.population.copy
+        population = self.population.copy()
         for mutated in mutated_list:
             population.append(mutated)
         sorted_population = sorted(population, key=lambda individual: individual.score, reverse=True)

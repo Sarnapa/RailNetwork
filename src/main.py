@@ -24,5 +24,6 @@ print (rails_cost, ps_cost, population_quantity, selection_quantity, iterations_
 evo_algo = EvoAlgo(cities_pos, ps_pos, int(rails_cost), int(ps_cost), int(population_quantity), int(selection_quantity), int(iterations_count), int(attempts_count))
 evo_algo.generate_init_population()
 selected = evo_algo.do_selection()
-evo_algo.do_crossover(selected)
+children_list = evo_algo.do_crossover(selected)
+mutated_list = evo_algo.do_mutation(children_list)
 

@@ -61,6 +61,8 @@ class RailNetworkTree:
     # na razie tak - trzeba pomyslec z ta funkcja
     def count_score(self):
         cities_to_find_ps_conn = self.cities_nodes.copy()
+        #ps_score = 0
+        #cities_score = 0
         self.score = 0
         for v1, v2 in self.graph.edges():
             if v1 < 0 or v2 < 0:
@@ -68,12 +70,18 @@ class RailNetworkTree:
                     cities_to_find_ps_conn.remove(v1)
                 elif v2 >= 0:
                     cities_to_find_ps_conn.remove(v2)
+                #print("KOSZT ODCINEK: ", self.ps_cost * self.graph[v1][v2]['weight'], " ", v1, " ", v2)
                 self.score += self.ps_cost * self.graph[v1][v2]['weight']
+                #ps_score += self.ps_cost * self.graph[v1][v2]['weight']
             else:
+                #print("KOSZT ODCINEK: ", self.rails_cost * self.graph[v1][v2]['weight'], " ", v1, " ", v2)
                 self.score += self.rails_cost * self.graph[v1][v2]['weight']
+                #cities_score += self.rails_cost * self.graph[v1][v2]['weight']
         for city in cities_to_find_ps_conn:
+            #print("KOSZT ODCINEK: ", self.ps_cost * self.distance_to_nearest_ps(city), " miasto: ", city)
             self.score += self.ps_cost * self.distance_to_nearest_ps(city)
-        #print("SCORE: ", self.score)
+            #ps_score += self.ps_cost * self.distance_to_nearest_ps(city)
+        #print("SCORE: ", self.score, " ", ps_score, " ", cities_score)
         return self.score
 
     def distance_to_nearest_ps(self, node):
@@ -114,31 +122,30 @@ class RailNetworkTree:
 
     def mutate(self):
         added_edge = self.addCycleToGraph()
-        if(added_edge[0]<-1):
+        print("added_edge: ", added_edge)
+        if added_edge[0] < 0:
             neighbours = self.graph.neighbors(added_edge[0])
             neighbours.remove(added_edge[1])
-            self.graph.remove_edge(added_edge[0],neighbours[0])
-        elif(added_edge[1]<-1):
+            self.remove_edge(added_edge[0], neighbours[0])
+        elif added_edge[1] < 0:
             neighbours = self.graph.neighbors(added_edge[1])
             neighbours.remove(added_edge[0])
-            self.graph.remove_edge(added_edge[1], neighbours[0])
+            self.remove_edge(added_edge[1], neighbours[0])
         else:
             edges_to_remove = list(nx.find_cycle(self.graph))
             edges_to_remove.remove(added_edge)
-            edge_to_remove = random.sample(edges_to_remove,1)
-            self.graph.remove_edge(edge_to_remove)
-
+            edge_to_remove = sample(edges_to_remove, 1)
+            v1, v2 = edge_to_remove
+            print("lolo: ", edge_to_remove, " ", v1, " ", v2)
+            self.remove_edge(v1, v2)
 
     def addCycleToGraph(self):
         do = True
         while do:
-            nodes = random.sample(self.graph.nodes(), 2)
-            if not (self.graph.has_edge(nodes[0], nodes[1])):
-                self.graph.add_edge(nodes[0], nodes[1])
-                return (nodes[0], nodes[1])
-
-
-
+            nodes = sample(self.graph.nodes(), 2)
+            if not (self.graph.has_edge(nodes[0], nodes[1]) or self.graph.has_edge(nodes[1], nodes[0])):
+                self.add_edge(nodes[0], nodes[1])
+                return nodes[0], nodes[1]
 
     def crossover(self, edges1, edges2):
         g = nx.Graph()
@@ -174,7 +181,6 @@ class RailNetworkTree:
             node2, weight = edge[0]
             current_score = self.score
             self.add_edge(node2, node)
-            print("nowy edge: ", node2, node)
             if node2 in connected_cities:
                 self.remove_edge(node2, node)
             elif self.count_score() > current_score:
@@ -182,23 +188,6 @@ class RailNetworkTree:
             else:
                 connected_cities.append(node2)
                 ps_nodes.remove(node)
-
-
-
-    '''
-    def connect_ps_to_nearest_cities(self):
-        current_city = None
-        cities = self.cities_nodes.copy()
-        for ps in self.ps_nodes:
-            distance = sys.float_info.max
-            for city in list(cities):
-                tmp_distance = distanceBetweenPoints(self.get_node_pos(city) + (0,), self.get_node_pos(ps) + (0,))
-                if tmp_distance < distance:
-                    distance = tmp_distance
-                    current_city = city
-                    cities.remove(city)
-
-            self.add_edge(current_city, ps) '''
 
     # na razie dla testow
     def print_tree(self):

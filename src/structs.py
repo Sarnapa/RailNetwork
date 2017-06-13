@@ -12,6 +12,8 @@ class RailNetworkTree:
         self.ps_cost = ps_cost
         self.cities_nodes = set()
         self.ps_nodes = set()
+        self.cities_score = sys.float_info.max
+        self.ps_score = sys.float_info.max
         self.connected_ps_nodes = set()
         self.graph = nx.Graph()
         for vertex, pos in pos_dict.items():
@@ -61,8 +63,8 @@ class RailNetworkTree:
     # na razie tak - trzeba pomyslec z ta funkcja
     def count_score(self):
         cities_to_find_ps_conn = self.cities_nodes.copy()
-        #ps_score = 0
-        #cities_score = 0
+        self.ps_score = 0
+        self.cities_score = 0
         self.score = 0
         for v1, v2 in self.graph.edges():
             if v1 < 0 or v2 < 0:
@@ -70,18 +72,17 @@ class RailNetworkTree:
                     cities_to_find_ps_conn.remove(v1)
                 elif v2 >= 0:
                     cities_to_find_ps_conn.remove(v2)
-                #print("KOSZT ODCINEK: ", self.ps_cost * self.graph[v1][v2]['weight'], " ", v1, " ", v2)
-                self.score += self.ps_cost * self.graph[v1][v2]['weight']
-                #ps_score += self.ps_cost * self.graph[v1][v2]['weight']
+                current_score = self.ps_cost * self.graph[v1][v2]['weight']
+                self.score += current_score
+                self.ps_score += current_score
             else:
-                #print("KOSZT ODCINEK: ", self.rails_cost * self.graph[v1][v2]['weight'], " ", v1, " ", v2)
-                self.score += self.rails_cost * self.graph[v1][v2]['weight']
-                #cities_score += self.rails_cost * self.graph[v1][v2]['weight']
+                current_score = self.rails_cost * self.graph[v1][v2]['weight']
+                self.score += current_score
+                self.cities_score += current_score
         for city in cities_to_find_ps_conn:
-            #print("KOSZT ODCINEK: ", self.ps_cost * self.distance_to_nearest_ps(city), " miasto: ", city)
-            self.score += self.ps_cost * self.distance_to_nearest_ps(city)
-            #ps_score += self.ps_cost * self.distance_to_nearest_ps(city)
-        #print("SCORE: ", self.score, " ", ps_score, " ", cities_score)
+            current_score = self.ps_cost * self.distance_to_nearest_ps(city)
+            self.score += current_score
+            self.ps_score += current_score
         return self.score
 
     def distance_to_nearest_ps(self, node):

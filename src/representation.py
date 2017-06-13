@@ -18,7 +18,7 @@ class Representation:
         plt.title("Funkcja celu")
         plt.show()
 
-    def save_graph(self, Graph, path, testCase, test, config_parameters, cost, show):
+    def save_graph(self, Graph, path, testCase, test, config_parameters, cost, cost_cities, cost_ps, show):
         figure, axes = plt.subplots()
         cities = {}
         electricity = {}
@@ -53,24 +53,27 @@ class Representation:
                            (Graph.node[edge[1]]['x'], Graph.node[edge[1]]['y'])))
 
         nx.draw_networkx_nodes(Graph, cities, cities.keys(), node_color='red', node_size=150,
-                               label='Miasto' + '\n' + 'K: ' +
-                                   config_parameters[0] + '\n',
+                               label='Miasto',
                                ax=axes)
         nx.draw_networkx_nodes(Graph, electricity, electricity.keys(), node_color='blue', node_size=150, node_shape='h',
-                               label='Elektrownia' + '\n' + 'Ke: ' +
-                                   config_parameters[1] + '\n',
+                               label='\nElektrownia\n',
                                ax=axes)
+
+        # nx.draw_networkx_edges(Graph, edges_cities, edge_color="black" )
+        nx.draw_networkx_edges(Graph, edges_cities, keysC,
+                               label="Cost cities edges:" + str(format(cost_cities, '.7f')) + '\nK: ' +
+                                     config_parameters[0], ax=axes)
+        nx.draw_networkx_edges(Graph, edges_electricity, keysE, edge_color="red",
+                               label="Cost ps edges:" + str(format(cost_ps, '.7f')) + '\nKe: ' +
+                                     config_parameters[1],ax=axes)
         empty = {(0, 0): (0, 0)}
         nx.draw_networkx_nodes(Graph, empty, empty.keys(), node_color='white', node_size=0,
-                               label='CAPEX: ' + str(format(cost,'.7f'))
+                               label='\n\nCAPEX: ' + str(format(cost, '.7f'))
                                      + '\nPopulation: ' + str(config_parameters[2])
                                      + '\nSelection: ' + str(config_parameters[3])
                                      + '\nIteraions: ' + str(config_parameters[4])
                                      + '\nAttemps: ' + str(config_parameters[5]),
                                ax=axes)
-        # nx.draw_networkx_edges(Graph, edges_cities, edge_color="black" )
-        nx.draw_networkx_edges(Graph, edges_cities, keysC)
-        nx.draw_networkx_edges(Graph, edges_electricity, keysE, edge_color="red")
         # nx.draw_networkx(Graph)
         handles, labels = axes.get_legend_handles_labels()
         legend = axes.legend(handles, labels, loc='upper center', ncol=3, bbox_to_anchor=(0.5, -0.1))
@@ -82,8 +85,7 @@ class Representation:
             plt_copy = plt
             plt_copy.show()
 
-
         # plt.imsave(path+ folder_out+"/"+ testCase + "_" + test + '_bestIm.png', format='png')
-        plt.savefig(path  + "/" + testCase + "_" + test + '_theBest.png',
+        plt.savefig(path + "/" + testCase + "_" + test + '_theBest.png',
                     bbox_extra_artists=(legend,), bbox_inches='tight', format='png')
         plt.close(figure)

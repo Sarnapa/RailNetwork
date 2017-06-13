@@ -30,6 +30,6 @@ for test in tests:
     for individual in evo_algo.population:
         individual.print_tree()
         individual.count_score()
-        print("FINAL SCORE: ", individual.score)
+        print("FINAL SCORE: ", individual.score, " ", individual.cities_score, " ", individual.ps_score)
     print("THE BEST SCORE: ", evo_algo.population[0].score)
-    result_representation.save_graph(evo_algo.population[0].graph, "../tests/result_representation/", testCase_name, test[0], evo_algo.population[0].score, True)
+    result_representation.save_graph(evo_algo.population[0].graph, "../tests/result_representation/", testCase_name, test[0], evo_algo.population[0].score, False)

@@ -1,5 +1,5 @@
 from src.utils import distanceBetweenPoints
-from random import sample, random
+from random import sample, choice
 import networkx as nx
 import sys
 import operator
@@ -124,7 +124,7 @@ class RailNetworkTree:
         added_edge = self.addCycleToGraph()
         if added_edge[0] < 0:
             neighbours = self.graph.neighbors(added_edge[0])
-            if len(neighbours) > 1 and added_edge[1]>0:
+            if len(neighbours) > 1:
                 neighbours.remove(added_edge[1])
                 self.remove_edge(added_edge[0], neighbours[0])
         elif added_edge[1] < 0:
@@ -191,19 +191,28 @@ class RailNetworkTree:
 
         ps_nodes = self.ps_nodes.copy()
         connected_cities = []
+        after_first = False
         for i in range(len(ps_nodes)):
-            node = sample(ps_nodes, 1).pop(0)
-            edge = sample(edges[node], 1)
-            node2, weight = edge[0]
-            current_score = self.score
-            self.add_edge(node2, node)
-            if node2 in connected_cities:
-                self.remove_edge(node2, node)
-            elif self.count_score() > current_score:
-                self.remove_edge(node2, node)
+            if after_first:
+                node = choice(list(ps_nodes))
             else:
-                connected_cities.append(node2)
-                ps_nodes.remove(node)
+                node = 0
+                while not after_first:
+                    node = choice(list(ps_nodes))
+                    if len(edges[node]) > 0:
+                        after_first = True
+            if len(edges[node]) > 0:
+                edge = choice(list(edges[node]))
+                node2, weight = edge
+                current_score = self.score
+                self.add_edge(node2, node)
+                if node2 in connected_cities:
+                    self.remove_edge(node2, node)
+                elif self.count_score() > current_score:
+                    self.remove_edge(node2, node)
+                else:
+                    connected_cities.append(node2)
+                    ps_nodes.remove(node)
 
     # na razie dla testow
     def print_tree(self):

@@ -24,3 +24,11 @@ class LoadData:
 
         file.close()
         return parameters
+
+    def read_testCase(self, path):
+        file = open (path,'r')
+        files = []
+        for line in file:
+            row = line.split()
+            files.append(row)
+        return files

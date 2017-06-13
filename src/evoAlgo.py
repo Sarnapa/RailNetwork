@@ -27,6 +27,7 @@ class EvoAlgo:
         best_results = []
 
         for i in range(self.iterations_count):
+            print("Iter: ", i)
             result = self.start_one_iter()
             best_results.append(result[0])
             # jakies kwestie zwiazane z generowanie raportów

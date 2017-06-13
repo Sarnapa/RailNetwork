@@ -5,8 +5,8 @@ from src.representation import Representation
 
 topology_catalog_path = "../tests/topology/"
 config_catalog_path = "../tests/config/"
-cities_file_name = "Test03_cities"
-ps_file_name = "Test03_power_stations"
+cities_file_name = "Test07_cities"
+ps_file_name = "Test07_power_stations"
 config_file_name = "Config_01"
 
 rails_cost, ps_cost, population_quantity, selection_quantity, iterations_count, attempts_count = LoadData().read_config(config_catalog_path + config_file_name)

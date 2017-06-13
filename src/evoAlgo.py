@@ -1,4 +1,3 @@
-from src.representation import Representation
 from src.structs import RailNetworkTree
 from random import random
 from bisect import bisect_left
@@ -29,7 +28,7 @@ class EvoAlgo:
 
         for i in range(self.iterations_count):
             result = self.start_one_iter()
-            best_results.append(result)
+            best_results.append(result[0])
             # jakies kwestie zwiazane z generowanie raportów
 
         return best_results
@@ -68,7 +67,7 @@ class EvoAlgo:
             else:
                 rand_pos = bisect_left(scores_list, rand)
             selected_individuals.append(population[rand_pos])
-            population[rand_pos].print_tree()
+            #population[rand_pos].print_tree()
             print("SCORE: ", population[rand_pos].score)
             tmp_pos = rand_pos + 1
             for j in range(tmp_pos, len(population)):
@@ -92,7 +91,7 @@ class EvoAlgo:
         print("After crossing-over: ")
         for child in children_list:
             child.count_score()
-            child.print_tree()
+            #child.print_tree()
             print("Child score: ", child.score)
         return children_list
 
@@ -103,9 +102,9 @@ class EvoAlgo:
 
         print("After mutation: ")
         for child in children_list:
-            child.print_tree()
+            #child.print_tree()
             child.count_score()
-            print("Child score: ", child.score)
+            print("Mutated score: ", child.score)
         return children_list
 
     def do_succession(self, mutated_list):
@@ -118,9 +117,6 @@ class EvoAlgo:
         sorted_population = sorted(population, key=lambda individual: individual.score)
         self.population = sorted_population[:self.population_quantity]
         print("After succession")
-        ind = RailNetworkTree(self.pos_dict,2,3)
         for individual in self.population:
-            individual.print_tree()
+            #individual.print_tree()
             print("Score: ", individual.score)
-            ind = individual
-        Representation().show_graph(ind.graph)

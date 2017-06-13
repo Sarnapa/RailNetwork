@@ -146,8 +146,11 @@ class RailNetworkTree:
     def addCycleToGraph(self):
         do = True
         while do:
-            nodes = sample(self.graph.nodes(), 2)
-            v1, v2 = nodes
+            v1 = -1
+            v2 = -1
+            while v1 < 0 and v2 < 0:
+                nodes = sample(self.graph.nodes(), 2)
+                v1, v2 = nodes
             if not (self.graph.has_edge(v1, v2)):
                 if not(v1 < 0 and self.is_connected_to_ps(v2)) and not(v2 < 0 and self.is_connected_to_ps(v1)):
                     self.add_edge(v1, v2)

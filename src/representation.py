@@ -18,8 +18,7 @@ class Representation:
         plt.title("Funkcja celu")
         plt.show()
 
-    def save_graph(self, Graph, path, testCase, test ,cost, show):
-        folder_out =  testCase+"_"+str(datetime.datetime.today().strftime("%Y.%m.%d-%H.%M.%S"))
+    def save_graph(self, Graph, path, testCase, test, config_parameters, cost, show):
         figure, axes = plt.subplots()
         cities = {}
         electricity = {}
@@ -38,28 +37,36 @@ class Representation:
                 # edges_electricity.update({edge: ((Graph.node[edge[0]]['x'], Graph.node[edge[0]]['y']),
                 #                                               (Graph.node[edge[1]]['x'], Graph.node[edge[1]]['y']))})
                 edges_electricity.update({(Graph.node[edge[0]]['x'], Graph.node[edge[0]]['y']):
-                                      (Graph.node[edge[0]]['x'], Graph.node[edge[0]]['y']),
-                                         (Graph.node[edge[1]]['x'], Graph.node[edge[1]]['y']):
-                                          (Graph.node[edge[1]]['x'], Graph.node[edge[1]]['y'])})
+                                              (Graph.node[edge[0]]['x'], Graph.node[edge[0]]['y']),
+                                          (Graph.node[edge[1]]['x'], Graph.node[edge[1]]['y']):
+                                              (Graph.node[edge[1]]['x'], Graph.node[edge[1]]['y'])})
                 keysE.add(((Graph.node[edge[0]]['x'], Graph.node[edge[0]]['y']),
                            (Graph.node[edge[1]]['x'], Graph.node[edge[1]]['y'])))
             else:
                 # edges_cities.update({edge[0]: ((Graph.node[edge[0]]['x'], Graph.node[edge[0]]['y']),
                 #                                             (Graph.node[edge[1]]['x'], Graph.node[edge[1]]['y']))})
                 edges_cities.update({(Graph.node[edge[0]]['x'], Graph.node[edge[0]]['y']):
-                                      (Graph.node[edge[0]]['x'], Graph.node[edge[0]]['y']),
-                                         (Graph.node[edge[1]]['x'], Graph.node[edge[1]]['y']):
-                                          (Graph.node[edge[1]]['x'], Graph.node[edge[1]]['y'])})
+                                         (Graph.node[edge[0]]['x'], Graph.node[edge[0]]['y']),
+                                     (Graph.node[edge[1]]['x'], Graph.node[edge[1]]['y']):
+                                         (Graph.node[edge[1]]['x'], Graph.node[edge[1]]['y'])})
                 keysC.add(((Graph.node[edge[0]]['x'], Graph.node[edge[0]]['y']),
                            (Graph.node[edge[1]]['x'], Graph.node[edge[1]]['y'])))
 
         nx.draw_networkx_nodes(Graph, cities, cities.keys(), node_color='red', node_size=150,
-                               label='Miasto' + '\n' + 'DT: ' + str(
-                                   format(4.4345, '.5f')) + '\n',
+                               label='Miasto' + '\n' + 'K: ' +
+                                   config_parameters[0] + '\n',
                                ax=axes)
         nx.draw_networkx_nodes(Graph, electricity, electricity.keys(), node_color='blue', node_size=150, node_shape='h',
-                               label='Elektrownia' + '\n' + 'CAPEX: ' + str(
-                                   format(cost, '.5f')) + '\n',
+                               label='Elektrownia' + '\n' + 'Ke: ' +
+                                   config_parameters[1] + '\n',
+                               ax=axes)
+        empty = {(0, 0): (0, 0)}
+        nx.draw_networkx_nodes(Graph, empty, empty.keys(), node_color='white', node_size=0,
+                               label='CAPEX: ' + str(format(cost,'.7f'))
+                                     + '\nPopulation: ' + str(config_parameters[2])
+                                     + '\nSelection: ' + str(config_parameters[3])
+                                     + '\nIteraions: ' + str(config_parameters[4])
+                                     + '\nAttemps: ' + str(config_parameters[5]),
                                ax=axes)
         # nx.draw_networkx_edges(Graph, edges_cities, edge_color="black" )
         nx.draw_networkx_edges(Graph, edges_cities, keysC)
@@ -67,19 +74,16 @@ class Representation:
         # nx.draw_networkx(Graph)
         handles, labels = axes.get_legend_handles_labels()
         legend = axes.legend(handles, labels, loc='upper center', ncol=3, bbox_to_anchor=(0.5, -0.1))
-        #legend.get_frame().set_alpha(0.5)
-        plt.gca().set_aspect('equal',adjustable= 'box')
+        # legend.get_frame().set_alpha(0.5)
+        plt.gca().set_aspect('equal', adjustable='box')
         plt.title("Najlepsze uzyskane rozwiązanie")
 
-
         if show:
-            plt.show()
+            plt_copy = plt
+            plt_copy.show()
 
-        print(folder_out+"/" + test)
-        if not os.path.exists(path+folder_out):
-            os.makedirs(path + folder_out)
-#       plt.imsave(path+ folder_out+"/"+ testCase + "_" + test + '_bestIm.png', format='png')
-        plt.savefig(path+ folder_out+"/"+ testCase + "_" + test + '_best.png',
-                        bbox_extra_artists=(legend,), bbox_inches='tight', format='png')
+
+        # plt.imsave(path+ folder_out+"/"+ testCase + "_" + test + '_bestIm.png', format='png')
+        plt.savefig(path  + "/" + testCase + "_" + test + '_theBest.png',
+                    bbox_extra_artists=(legend,), bbox_inches='tight', format='png')
         plt.close(figure)
-

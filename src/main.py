@@ -34,8 +34,9 @@ for test in tests:
     evo_algo = EvoAlgo(cities_pos, ps_pos, int(rails_cost), int(ps_cost), int(population_quantity),
                        int(selection_quantity), int(iterations_count), int(attempts_count))
     evo_algo.generate_init_population()
-    evo_algo.start_evo_algo(None, None)
+    bests = evo_algo.start_evo_algo(None, None)
     result_representation = Representation()
+    result_representation.save_chart(folder_out,testCase_name,test[0],bests,iterations_count)
     for individual in evo_algo.population:
         individual.print_tree()
         individual.count_score()

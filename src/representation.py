@@ -7,14 +7,33 @@ import networkx as nx
 
 class Representation:
     def __init__(self):
-        # self.generate_out_files([1, 2, 3, 4, 5, 6], [4, 5, 1, 2, 7, 8])
-        print("Representation")
+        self.iterations =[]
+        self.values_fc = []
 
-    def generate_out_files(self, iterations, values_fc):
+    def reset_chart(self):
+        self.iterations= []
+        self.values_fc= []
+
+    def add_point_to_chart(self,iteration, value):
+        self.iterations.append(iteration)
+        self.values_fc.append(value)
+
+    def save_chart(self,path,testCase,test,bests,iterations):
+        figure, axes = plt.subplots()
+        plt.ylabel('Uzyskany kosz sieci w danej iteracji')
+        plt.xlabel('Iteracja')
+        plt.plot(range(int(iterations)), bests, linewidth=2.0)
+        #plt.show()
+        plt.savefig(path + "/" + testCase + "_" + test + '_chart.png',
+                     bbox_inches='tight', format='png')
+        plt.close(figure)
+
+    def generate_out_files(self):
         plt.ylabel('Wartość funkcji celu')
         plt.xlabel('Iteracja')
-        plt.plot(iterations, values_fc, linewidth=2.0)
-        plt.grid(True)
+        print(self.iterations)
+        plt.plot(self.iterations, self.values_fc, linewidth=2.0)
+        #plt.grid(True)
         plt.title("Funkcja celu")
         plt.show()
 
@@ -61,18 +80,17 @@ class Representation:
 
         # nx.draw_networkx_edges(Graph, edges_cities, edge_color="black" )
         nx.draw_networkx_edges(Graph, edges_cities, keysC,
-                               label="Cost cities edges:" + str(format(cost_cities, '.7f')) + '\nK: ' +
+                               label="Rail network cost:" + str(format(cost_cities, '.7f')) + '\nK: ' +
                                      config_parameters[0], ax=axes)
         nx.draw_networkx_edges(Graph, edges_electricity, keysE, edge_color="red",
-                               label="Cost ps edges:" + str(format(cost_ps, '.7f')) + '\nKe: ' +
+                               label="Power grid cost:" + str(format(cost_ps, '.7f')) + '\nKe: ' +
                                      config_parameters[1],ax=axes)
         empty = {(0, 0): (0, 0)}
         nx.draw_networkx_nodes(Graph, empty, empty.keys(), node_color='white', node_size=0,
                                label='\n\nCAPEX: ' + str(format(cost, '.7f'))
                                      + '\nPopulation: ' + str(config_parameters[2])
                                      + '\nSelection: ' + str(config_parameters[3])
-                                     + '\nIteraions: ' + str(config_parameters[4])
-                                     + '\nAttemps: ' + str(config_parameters[5]),
+                                     + '\nIterations: ' + str(config_parameters[4]),
                                ax=axes)
         # nx.draw_networkx(Graph)
         handles, labels = axes.get_legend_handles_labels()

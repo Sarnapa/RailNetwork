@@ -12,7 +12,9 @@ class RailNetworkTree:
         self.ps_cost = ps_cost
         self.cities_nodes = set()
         self.ps_nodes = set()
+        # cost associated with building rail network
         self.cities_score = sys.float_info.max
+        # cost associated with building power grid
         self.ps_score = sys.float_info.max
         self.connected_ps_nodes = set()
         self.graph = nx.Graph()
@@ -60,7 +62,6 @@ class RailNetworkTree:
         elif v2 < 0 and v2 in self.connected_ps_nodes:
             self.connected_ps_nodes.remove(v2)
 
-    # na razie tak - trzeba pomyslec z ta funkcja
     def count_score(self):
         cities_to_find_ps_conn = self.cities_nodes.copy()
         self.ps_score = 0
@@ -91,7 +92,6 @@ class RailNetworkTree:
             tmp_distance = nx.shortest_path_length(self.graph, node, ps_node, 'weight')
             if tmp_distance < distance:
                 distance = tmp_distance
-        #print("WYNIK: ", distance, " ", node)
         return distance
 
     def generate_init_tree(self):
@@ -215,7 +215,7 @@ class RailNetworkTree:
                     connected_cities.append(node2)
                     ps_nodes.remove(node)
 
-    # na razie dla testow
+    # for testing
     def print_tree(self):
         print("Tree:")
         print("Nodes:")

@@ -1,9 +1,6 @@
 import os
-
 import datetime
-
 from src.evoAlgo import EvoAlgo
-from src.structs import RailNetworkTree
 from src.loadData import LoadData
 from src.representation import Representation
 
@@ -39,8 +36,9 @@ for test in tests:
     for individual in evo_algo.population:
         individual.print_tree()
         individual.count_score()
-        print("FINAL SCORE: ", individual.score, " ", individual.cities_score, " ", individual.ps_score)
-    print("THE BEST SCORE: ", evo_algo.population[0].score)
+        print("Final Score: ", individual.score, " ", individual.cities_score, " ", individual.ps_score)
+        print("The Best Score: ", evo_algo.population[0].score, " ", evo_algo.population[0].cities_score, " ",
+              evo_algo.population[0].ps_score)
     result_representation.save_graph(evo_algo.population[0].graph,
                                      folder_out, testCase_name, test[0],
                                      config_parameters,

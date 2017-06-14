@@ -15,9 +15,7 @@ class EvoAlgo:
             self.pos_dict[vertex] = pos
         self.rails_cost = rails_cost
         self.ps_cost = ps_cost
-        # liczebnosc populacji
         self.population_quantity = population_quantity
-        # ile bierzemy w wyniku selekcij
         self.selection_quantity = selection_quantity
         self.iterations_count = iterations_count
         self.attempts_count = attempts_count
@@ -27,7 +25,7 @@ class EvoAlgo:
         best_results = []
 
         for i in range(self.iterations_count):
-            print("Iter: ", i)
+            print("Iteration: ", i + 1)
             result = self.start_one_iter()
             best_results.append(result[0])
             # jakies kwestie zwiazane z generowanie raportów
@@ -68,8 +66,6 @@ class EvoAlgo:
             else:
                 rand_pos = bisect_left(scores_list, rand)
             selected_individuals.append(population[rand_pos])
-            #population[rand_pos].print_tree()
-            print("SCORE: ", population[rand_pos].score)
             tmp_pos = rand_pos + 1
             for j in range(tmp_pos, len(population)):
                 scores_list[j] -= 1/population[rand_pos].score
@@ -89,11 +85,6 @@ class EvoAlgo:
                 child.connect_ps(selected_individuals[i].get_ps_edges(), selected_individuals[j].get_ps_edges())
                 children_list.append(child)
 
-        print("After crossing-over: ")
-        for child in children_list:
-            child.count_score()
-            #child.print_tree()
-            print("Child score: ", child.score)
         return children_list
 
     def do_mutation(self, children_list):
@@ -101,23 +92,17 @@ class EvoAlgo:
         for child in children_list:
             child.mutate()
 
-        print("After mutation: ")
-        for child in children_list:
-            #child.print_tree()
-            child.count_score()
-            print("Mutated score: ", child.score)
         return children_list
 
     def do_succession(self, mutated_list):
         population = self.population.copy()
         for mutated in mutated_list:
             population.append(mutated)
-        # na wszelki wypadek na wyliczamy wartosci dla wszystkich
         for individual in population:
             individual.count_score()
         sorted_population = sorted(population, key=lambda individual: individual.score)
         self.population = sorted_population[:self.population_quantity]
-        print("After succession")
+        print("After succession:")
         for individual in self.population:
             #individual.print_tree()
-            print("Score: ", individual.score)
+            print("Individual score: ", individual.score, " ", individual.cities_score, " ", individual.ps_score)

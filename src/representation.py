@@ -20,7 +20,7 @@ class Representation:
 
     def save_chart(self,path,testCase,test,bests,iterations):
         figure, axes = plt.subplots()
-        plt.ylabel('Uzyskany kosz sieci w danej iteracji')
+        plt.ylabel('Uzyskany koszt sieci w danej iteracji')
         plt.xlabel('Iteracja')
         plt.plot(range(int(iterations)), bests, linewidth=2.0)
         #plt.show()

@@ -5,7 +5,7 @@ from bisect import bisect_left
 
 class EvoAlgo:
 
-    def __init__(self, cities_pos, ps_pos, rails_cost, ps_cost, population_quantity, selection_quantity, iterations_count, attempts_count):
+    def __init__(self, cities_pos, ps_pos, rails_cost, ps_cost, population_quantity, selection_quantity, iterations_count):
         self.cities_pos = cities_pos
         self.ps_pos = ps_pos
         self.pos_dict = {}
@@ -18,32 +18,26 @@ class EvoAlgo:
         self.population_quantity = population_quantity
         self.selection_quantity = selection_quantity
         self.iterations_count = iterations_count
-        self.attempts_count = attempts_count
         self.population = []
 
-    def start_evo_algo(self, input_filename, path_to_report):
+    def start_evo_algo(self):
         best_results = []
 
         for i in range(self.iterations_count):
             print("Iteration: ", i + 1)
             result = self.start_one_iter()
-            best_results.append(result[0])
-            # jakies kwestie zwiazane z generowanie raportów
+            best_results.append(result)
 
         return best_results
 
     def start_one_iter(self):
-        best_cost = 0.0
-        avg_cost = 0.0
-
         selected_individuals = self.do_selection()
         children_list = self.do_crossover(selected_individuals)
         mutated_list = self.do_mutation(children_list)
         self.do_succession(mutated_list)
         best_cost = self.population[0].score
 
-        # pewnie więcej bedzie tutaj parametrow na outpucie
-        return [best_cost, avg_cost]
+        return best_cost
 
     def generate_init_population(self):
         for i in range(self.population_quantity):
